@@ -30,7 +30,6 @@ export default function Banner() {
                     <button onClick={() => router.push('/aboutUs')}>About us</button>
                     <button onClick={() => router.push('/stock')}>Stock</button>
                     <button onClick={() => router.push('/')}>News</button>
-                    <button>prueba</button>
                 </div>
             </div>
         </>
