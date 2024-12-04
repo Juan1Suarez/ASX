@@ -37,7 +37,6 @@ export default function Stock() {
     ? cotizaciones.filter((item) => item.empresa === empresaSeleccionada)
     : cotizaciones;
 
-  // Aplica la conversión de divisa (USD a AUD)
   const getChartData = () => {
     const cotizacionesAgrupadas: {
       [key: string]: { total: number; count: number; date: UTCTimestamp };
@@ -53,7 +52,6 @@ export default function Stock() {
         cotizacionesAgrupadas[key] = { total: 0, count: 0, date: timestamp };
       }
 
-      // Solo convertimos las cotizaciones a AUD
       cotizacionesAgrupadas[key].total += item.cotizacion * tasaCambio; 
       cotizacionesAgrupadas[key].count += 1;
     });
@@ -94,7 +92,7 @@ export default function Stock() {
 
     const resizeObserver = new ResizeObserver(() => {
       if (chartRef.current) {
-        chartRef.current.resize(chartContainerRef.current?.offsetWidth || 0, 745);
+        chartRef.current.resize(chartContainerRef.current?.offsetWidth || 0, 655);
       }
     });
 
@@ -128,8 +126,6 @@ export default function Stock() {
         <button onClick={toggleGrafico} className="botonGrafico">
           {porHora ? t('dia') : t('hora')}
         </button> 
-
-        {/* No es necesario mostrar la tasa de cambio si es solo para conversión */}
       </div>
 
       <div className="stockContainer">
@@ -137,11 +133,11 @@ export default function Stock() {
           {getUniqueEmpresas().map((empresa) => (
             <h3
               key={empresa}
+              title={empresa}
               className={`marcaBoton ${empresaSeleccionada === empresa ? 'active' : ''}`}
               onClick={() => handleEmpresaClick(empresa)}
             >
-              {empresa}
-            </h3>
+              {empresa.length > 10 ? `${empresa.slice(0, 10)}...` : empresa}</h3>
           ))}
         </div>
         <div ref={chartContainerRef} className="chartContainer"></div>

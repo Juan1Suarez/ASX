@@ -67,6 +67,24 @@
   color: #e0e0e0;
 }
 
+.marcaBoton::after {
+  content: attr(title);
+  display: block;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.marcaBoton:hover::after {
+  opacity: 1;
+}
+
 .chartContainer {
   flex-grow: 1;
   height: 400px;
