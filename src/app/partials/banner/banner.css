@@ -1,0 +1,62 @@
+/* Banner */
+.banner {
+  background-color: rgb(1, 109, 145);
+  color: white;
+  margin: -8px;
+  display: flex;
+  justify-content: space-between;
+  height: 120px;
+  align-items: center; 
+  padding: 0 20px; 
+  transition: all 0.3s ease;
+}
+
+.botonesBanner {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 50px;
+  font-size: 23px;
+  margin: 36px;
+  color: rgb(255, 255, 255);
+  align-items: center;
+}
+
+.botonesBanner :hover {
+  cursor: pointer;
+  text-decoration: underline;
+  border-radius: 10px;
+}
+
+.logo {
+  height: 90px;
+  width: auto;
+  margin-top: 5px;
+  margin-left: 25px;
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+.botonesBanner button {
+  background-color: rgb(26, 154, 197);
+  color: white;
+  border: 2px solid transparent; 
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.botonesBanner button:hover {
+  background-color: rgb(255, 255, 255);
+  color: rgb(26, 154, 197); 
+  border-color: rgb(26, 154, 197); 
+  transform: scale(1.1);
+}
