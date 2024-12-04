@@ -2,13 +2,14 @@
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import {useTranslation} from 'next-i18next';
-import '@/app/idiomas/i18n';
+import '@/app/idiomas/i18n'
 import { useState } from "react";
+import "@/app/partials/banner/banner.css"
 
 export default function Banner() {
     const router = useRouter();
 
-    const { t, i18n} = useTranslation();
+    const { t , i18n} = useTranslation("banner");
     const [idioma, setIdioma] = useState("EN");
   
     const cambiarIdioma = () => {
@@ -24,12 +25,12 @@ export default function Banner() {
     return (
         <>
             <div className="banner">
-                <img className="titulo" src="./ASX.png"></img>
+                <img className="logo" src="./ASX.png" onClick={() => router.push('/')}></img>
                 <div className="botonesBanner">
-                    <button  onClick={cambiarIdioma}> {t('cambiar')}</button>
-                    <button onClick={() => router.push('/aboutUs')}>About us</button>
-                    <button onClick={() => router.push('/stock')}>Stock</button>
-                    <button onClick={() => router.push('/')}>News</button>
+                <button onClick={cambiarIdioma}>{t("idioma")}</button>
+                    <div onClick={() => router.push('/aboutUs')}>{t("aboutUs")}</div>
+                    <div onClick={() => router.push('/stock')}>Stocks</div>
+                    <div onClick={() => router.push('/')}>{t("home")}</div>
                 </div>
             </div>
         </>

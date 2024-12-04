@@ -1,95 +1,151 @@
-"use client"
 import { useTranslation } from 'next-i18next';
 import '@/app/idiomas/i18n';
-import { useState } from "react";
-import { Doughnut, Line } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
-
-Chart.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
-
+import { useEffect, useRef, useState } from 'react';
+import '@/app/partials/stock/stock.css';
+import { createChart, IChartApi, UTCTimestamp } from 'lightweight-charts';
+import { verCotizaciones } from '@/app/services/datosEmpresas';
 
 export default function Stock() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation("stock");
+  const chartContainerRef = useRef<HTMLDivElement | null>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<string | null>(null);
+  const [cotizaciones, setCotizaciones] = useState<
+    Array<{ fecha: string; hora: string; cotizacion: number; empresa: string }>
+  >([]);
+  const [porHora, setPorHora] = useState(true);
+  const [tasaCambio, setTasaCambio] = useState<number>(1.55);
 
-  const data = {
-    labels: [
-      'AMD',
-      'INTEL',
-      'NVIDIA'
-    ],
-    datasets: [{
-      label: 'Industria tecnologica',
-      data: [300, 50, 500],
-      backgroundColor: [
-        'rgb(255, 99, 132)',
-        'rgb(54, 162, 235)',
-        'rgb(0,128,0)'
-      ],
-      hoverOffset: 4
-    }]
+  useEffect(() => {
+    const fetchCotizaciones = async () => {
+      try {
+        const data = await verCotizaciones();
+        setCotizaciones(data);
+        if (data.length > 0) {
+          setEmpresaSeleccionada(data[0].empresa);
+        }
+      } catch (error) {
+        console.error('Error al cargar las cotizaciones:', error);
+        setCotizaciones([]);
+      }
+    };
+
+    fetchCotizaciones();
+  }, []);
+
+  const cotizacionesFiltradas = empresaSeleccionada
+    ? cotizaciones.filter((item) => item.empresa === empresaSeleccionada)
+    : cotizaciones;
+
+  // Aplica la conversión de divisa (USD a AUD)
+  const getChartData = () => {
+    const cotizacionesAgrupadas: {
+      [key: string]: { total: number; count: number; date: UTCTimestamp };
+    } = {};
+
+    cotizacionesFiltradas.forEach((item) => {
+      const key = porHora ? `${item.fecha}T${item.hora}` : item.fecha;
+      const timestamp = porHora
+        ? (new Date(`${item.fecha}T${item.hora}`).getTime() / 1000) as UTCTimestamp
+        : (new Date(`${item.fecha}T00:00:00`).getTime() / 1000) as UTCTimestamp;
+
+      if (!cotizacionesAgrupadas[key]) {
+        cotizacionesAgrupadas[key] = { total: 0, count: 0, date: timestamp };
+      }
+
+      // Solo convertimos las cotizaciones a AUD
+      cotizacionesAgrupadas[key].total += item.cotizacion * tasaCambio; 
+      cotizacionesAgrupadas[key].count += 1;
+    });
+
+    return Object.values(cotizacionesAgrupadas)
+      .map((entry) => ({ time: entry.date, value: entry.total / entry.count }))
+      .sort((a, b) => a.time - b.time);
   };
 
-  const Utils = {
-    Hora: function ({count}: any) {
-      const horario = ["7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "18:00", "19:00"];
-      return horario.slice(0, count);
-    }
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+
+    chartRef.current = createChart(chartContainerRef.current, {
+      width: chartContainerRef.current.offsetWidth,
+      height: 400,
+      layout: { background: { color: '#000' }, textColor: '#FFF' },
+      grid: {
+        vertLines: { color: '#444' },
+        horzLines: { color: '#444' },
+      },
+      timeScale: {
+        timeVisible: porHora,
+        tickMarkFormatter: (time: UTCTimestamp) => {
+          const date = new Date(time * 1000);
+          return porHora
+            ? date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+            : date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        },
+      },
+    });
+
+    const lineSeries = chartRef.current.addLineSeries({
+      color: 'rgba(255, 255, 255, 0.7)',
+    });
+
+    const data = getChartData();
+    lineSeries.setData(data);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (chartRef.current) {
+        chartRef.current.resize(chartContainerRef.current?.offsetWidth || 0, 745);
+      }
+    });
+
+    resizeObserver.observe(chartContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+      chartRef.current?.remove();
+    };
+  }, [cotizacionesFiltradas, empresaSeleccionada, porHora]);
+
+  const getUniqueEmpresas = () => {
+    const empresas = cotizaciones.map((item) => item.empresa);
+    return Array.from(new Set(empresas));
   };
 
-  const labels = Utils.Hora({count: 7});
-const dataLine = {
-  labels: labels,
-  datasets: [{
-    label: 'NVIDIA',
-    data: [220, 300, 150, 400, 320, 450, 600],
-    fill: false,
-    borderColor: 'rgb(0,128,0)',
-    tension: 0.1
-  },
-  {
-    label: 'AMD',
-    data: [92, 130, 88, 110, 75, 140, 200],
-    fill: false,
-    borderColor: 'rgb(255, 99, 132)',
-    tension: 0.1
-  },
-  {
-    label: 'INTEL',
-    data: [53, 45, 60, 35, 70, 25, 80],
-    fill: false,
-    borderColor: 'rgb(75, 192, 192)',
-    tension: 0.1
-  },
-]
-};
-  
+  const handleEmpresaClick = (empresa: string) => {
+    setEmpresaSeleccionada(empresa);
+  };
+
+  const toggleGrafico = () => {
+    setPorHora((prev) => !prev);
+  };
 
   return (
     <>
-    <div className='marcasContainer'>
-    <h3 className='marcaBoton'>Microsoft</h3>
-    <h3 className='marcaBoton'>Meta</h3> 
-    <h3 className='marcaBoton'>Visa</h3> 
-    <h3 className='marcaBoton'>Walmart</h3> 
-    <h3 className='marcaBoton'>Novartis</h3> 
-    <h3 className='marcaBoton'>Nvidia</h3> 
-    <h3 className='marcaBoton'>TSMC</h3> 
-</div>
+      <br />
+      <div className="stockSection">
+        <h2 id="stock">{t('titulo')}</h2>
+        <p>{t('explore')}</p>
+        <button onClick={toggleGrafico} className="botonGrafico">
+          {porHora ? t('dia') : t('hora')}
+        </button> 
 
-<div className='chartBoton'>
-  <button>Line chart</button>
-  <button>Pie chart</button>
-  <button>Chart</button>
-</div>
-
-
-      <h1>{t('bienvenida')}</h1>
-      <div>You can see the current stock trading market in here.</div>
-      <div style={{ width: '400px'}}>
-      <Doughnut data={data} />
-      <Line data={dataLine}/>
+        {/* No es necesario mostrar la tasa de cambio si es solo para conversión */}
       </div>
 
+      <div className="stockContainer">
+        <div className="marcasContainer">
+          {getUniqueEmpresas().map((empresa) => (
+            <h3
+              key={empresa}
+              className={`marcaBoton ${empresaSeleccionada === empresa ? 'active' : ''}`}
+              onClick={() => handleEmpresaClick(empresa)}
+            >
+              {empresa}
+            </h3>
+          ))}
+        </div>
+        <div ref={chartContainerRef} className="chartContainer"></div>
+      </div>
     </>
   );
 }

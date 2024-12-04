@@ -1,7 +1,7 @@
 "use client"
 import AboutUs from "@/app/partials/aboutUs/aboutUs"
-import Banner from "@/app/partials/banner/banner"
 import Footer from "@/app/partials/footer/footer"
+import Banner from "@/app/partials/banner/banner"
 
 export default function Home() {
   return (<>

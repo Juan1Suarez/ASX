@@ -1,0 +1,95 @@
+/* Footer */
+.footerContainer {
+  background-color: rgb(1, 109, 145);
+  margin: -8px;
+  margin-left: -10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+a {
+  color: inherit; 
+  text-decoration: none; 
+}
+
+.contenido {
+  display: flex;
+  gap: 40px;
+  padding: 20px;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  flex-wrap: wrap;
+}
+
+.logoFooter {
+  height: 80px;
+  width: auto;
+  margin-left: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logoFooter:hover {
+  transform: scale(1.1);
+}
+
+.footersub {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 18px;
+  color: rgb(226, 225, 225);
+  min-width: 100px;
+}
+
+.footersub h3 {
+  text-decoration: underline;
+  font-size: 22px;
+  color: rgb(226, 225, 225);
+  margin-bottom: 10px;
+}
+
+.footersub small {
+  padding-left: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footersub small:hover {
+  color: rgb(1, 109, 145);
+  background-color: rgb(226, 225, 225);
+  padding: 3px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.footersub button {
+  background-color: rgb(95, 180, 209);
+  height: 45px;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.footersub button:hover {
+  color: black;
+  background-color: rgb(255, 255, 255);
+  transform: scale(1.05);
+}
+
+.trademark {
+  color: rgb(226, 225, 225);
+  font-size: 14px;
+  padding-left: 25px;
+  text-align: center;
+  width: 100%;
+  margin-top: 20px;
+}
+

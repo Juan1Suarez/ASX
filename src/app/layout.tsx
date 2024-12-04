@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "ASX",
   description: "Welcome to the Australian stock market",
-};
+};  
 
 export default function RootLayout({
   children,
